@@ -33,38 +33,25 @@
 #   }
 #
 class security_baseline_ntp (
-  Boolean $enforce = true,
-  String $message = '',
-  String $loglevel = '',
-  Optional[Hash] $config_data = {}
+  Boolean $enforce    = true,
+  String $message     = '',
+  String $loglevel    = '',
+  String $logfile     = '',
+  String $ntp_daemon  = '',
+  Array $ntp_servers  = [],
+  Array $ntp_restrict = [],
 ) {
-  if($config_data) {
-    validate_hash($config_data)
-  }
 
   if $enforce {
 
-    if(has_key($config_data, 'ntp_daemon')) {
-
-      $ntp_daemon = $config_data['ntp_daemon']
-      if(($ntp_daemon != 'none') and ($ntp_daemon != 'ntp') and ($ntp_daemon != 'chrony')) {
-        fail("Invalid value ${ntp_daemon} for ntp daemon to configure.")
-      }
-
+    if(($ntp_daemon != 'none') and ($ntp_daemon != 'ntp') and ($ntp_daemon != 'chrony')) {
+      fail("Invalid value ${ntp_daemon} for ntp daemon to configure.")
     }
 
     if($ntp_daemon != 'none') {
 
-      if(has_key($config_data, 'ntp_servers')) {
-        $ntp_servers = $config_data['ntp_servers']
-      } else {
+      if(empty($ntp_servers)) {
         fail("Can't configure ntp daemon without ntp servers")
-      }
-
-      if(has_key($config_data, 'restrict')) {
-        $ntp_restrict = $config_data['restrict']
-      } else {
-        $ntp_restrict = []
       }
 
       case $ntp_daemon {
@@ -103,5 +90,19 @@ class security_baseline_ntp (
 
   } else {
 
+    echo { 'ntp-daemon':
+      message  => $message,
+      loglevel => $loglevel,
+      withpath => false,
+    }
+
+    ::security_baseline::logging { 'ntp-test':
+        rulenr    => 'ntp-test',
+        rule      => 'ntp',
+        desc      => 'Test',
+        level     => $loglevel,
+        msg       => $message,
+        rulestate => 'not compliant',
+      }
   }
 }

@@ -9,6 +9,7 @@ describe 'security_baseline_ntp' do
           'enforce' => true,
           'message' => 'selinux',
           'loglevel' => 'warning',
+          'logfile' => '',
           'config_data' => {
             'ntp_daemon' => 'ntp',
             'ntp_servers'=> ['0.de.pool.ntp.org', '1.de.pool.ntp.org'],

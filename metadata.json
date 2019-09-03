@@ -17,6 +17,10 @@
     {
       "name": "puppetlabs-ntp",
       "version_requirement": "8.0.0"
+    },
+    {
+      "name": "ipcrm-echo",
+      "version_requirement": "0.1.6"
     }
   ],
   "operatingsystem_support": [
